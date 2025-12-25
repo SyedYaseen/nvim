@@ -1,0 +1,11 @@
+return {
+  "nvim-zh/colorful-winsep.nvim",
+  event = { "WinLeave" },
+  config = true,
+  opts = {
+    animate = {
+      enabled = false,
+      border = "single"
+    },
+  },
+}
