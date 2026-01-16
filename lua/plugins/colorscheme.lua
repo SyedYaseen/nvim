@@ -10,6 +10,9 @@ return {
         -- See https://github.com/rebelot/kanagawa.nvim#configuration for full options
       })
       vim.cmd("colorscheme kanagawa")
+      vim.cmd("highlight Normal guibg=#000000")
+      vim.cmd("highlight EndOfBuffer guibg=#000000")
+      vim.cmd("highlight LineNr guibg=#000000")
     end,
   },
 }

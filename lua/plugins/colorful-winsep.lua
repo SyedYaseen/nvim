@@ -3,9 +3,10 @@ return {
   event = { "WinLeave" },
   config = true,
   opts = {
+    border = "single",
+    highlight = "#276176",
     animate = {
       enabled = false,
-      border = "single"
     },
   },
 }

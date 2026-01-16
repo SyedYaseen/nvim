@@ -13,3 +13,6 @@ vim.api.nvim_create_autocmd("VimLeave", {
     vim.cmd("silent !kitty @ set-spacing margin=21.75")
   end,
 })
+
+vim.opt.winbar = "%{expand('%:.')} %m"
+--vim.opt.winbar = "%= 󰈚 %t %m %="
