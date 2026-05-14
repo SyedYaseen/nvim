@@ -18,8 +18,7 @@ vim.opt.number = true
 vim.opt.mouse = "a"
 vim.opt.termguicolors = true
 vim.opt.completeopt = "menu,menuone,noselect"
-vim.opt.clipboard = "unnamedplus" -- Optional: Sync with system clipboard
-
+vim.opt.clipboard = "unnamedplus"
 -- 3. Plugins
 require("lazy").setup({
 	{
@@ -133,6 +132,62 @@ require("lazy").setup({
 			vim.lsp.enable("jedi_language_server")
 		end,
 	},
+	{
+	  "ojroques/nvim-osc52",
+
+		  config = function()
+		    local osc52 = require("osc52")
+
+		    osc52.setup({
+		      max_length = 0,
+		      silent = false,
+		      trim = false,
+		    })
+
+		    vim.g.clipboard = {
+		      name = "osc52",
+
+		      copy = {
+			["+"] = function(lines, _)
+			  osc52.copy(table.concat(lines, "\n"))
+			end,
+
+			["*"] = function(lines, _)
+			  osc52.copy(table.concat(lines, "\n"))
+			end,
+		      },
+
+		      paste = {
+			["+"] = function()
+			  return {}
+			end,
+
+			["*"] = function()
+			  return {}
+			end,
+		      },
+		    }
+		  end,
+		},
+
+		-- Inside your require("lazy").setup({ ... })
+	{
+	    "kdheepak/lazygit.nvim",
+	    cmd = {
+		"LazyGit",
+		"LazyGitConfig",
+		"LazyGitCurrentFile",
+		"LazyGitFilter",
+		"LazyGitFilterCurrentFile",
+	    },
+	    -- optional for floating window border decoration
+	    dependencies = {
+		"nvim-lua/plenary.nvim",
+	    },
+	    -- [WARN]: Ensure lazygit is installed on your OS (e.g., brew install lazygit)
+	    -- [ERR]: If 'lazygit' is not in $PATH, this plugin will fail to launch.
+	},
+
 })
 
 -- 4. Keymaps (Restored all your custom mappings)
@@ -189,26 +244,54 @@ map("n", "gr", fzf.lsp_references, { desc = "References" })
 map("n", "gd", fzf.lsp_definitions, { desc = "Definitions" })
 map("n", "<leader>ss", fzf.lsp_document_symbols, { desc = "Document Symbols" })
 map("n", "<leader>sS", fzf.lsp_workspace_symbols, { desc = "Workspace Symbols" })
+-- LazyGit
+map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 
--- 5. Diagnostic & LSP Logic
+-- Diagnostics
 vim.diagnostic.config({
-	virtual_text = { spacing = 4, prefix = "●", source = "if_many" },
-	float = { border = "rounded" },
-	signs = true,
-	update_in_insert = false,
-	underline = true,
+  virtual_text = {
+    spacing = 4,
+    prefix = "●",
+    source = "if_many",
+  },
+
+  float = {
+    border = "rounded",
+  },
+
+  signs = true,
+  update_in_insert = false,
+  underline = true,
 })
 
--- LSP Keymaps (Attached only when LSP is active)
+-- LSP Keymaps
 vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(ev)
-		local opts = { buffer = ev.buf }
-		map("n", "gd", vim.lsp.buf.definition, { desc = "Goto Definition", buffer = ev.buf })
-		map("n", "gr", vim.lsp.buf.references, { desc = "Goto References", buffer = ev.buf })
-		map("n", "gD", vim.lsp.buf.declaration, { desc = "Goto Declaration", buffer = ev.buf })
-		map("n", "gI", vim.lsp.buf.implementation, { desc = "Goto Implementation", buffer = ev.buf })
-		map("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation", buffer = ev.buf })
-		map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename Symbol", buffer = ev.buf })
-		map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action", buffer = ev.buf })
-	end,
-}
+  callback = function(ev)
+    local map = vim.keymap.set
+
+    map("n", "gD", vim.lsp.buf.declaration, {
+      buffer = ev.buf,
+      desc = "Goto Declaration",
+    })
+
+    map("n", "gI", vim.lsp.buf.implementation, {
+      buffer = ev.buf,
+      desc = "Goto Implementation",
+    })
+
+    map("n", "K", vim.lsp.buf.hover, {
+      buffer = ev.buf,
+      desc = "Hover",
+    })
+
+    map("n", "<leader>cr", vim.lsp.buf.rename, {
+      buffer = ev.buf,
+      desc = "Rename",
+    })
+
+    map("n", "<leader>ca", vim.lsp.buf.code_action, {
+      buffer = ev.buf,
+      desc = "Code Action",
+    })
+  end,
+})
